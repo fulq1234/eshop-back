@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.business.dao.IAdminDao">
+	<select id="query" resultType="com.love.business.entity.Admin">
+		select * from tbl_admin where username=#{username}
+	</select>
+</mapper>

@@ -1,0 +1,311 @@
+Framemarker的官网:http://freemarker.org/
+metronic:https://www.metronic.com/
+
+
+
+SPRINGMVC
+
+1.web.xml配置dispatcherServlet
+
+	 <servlet>
+		<servlet-name>mvc-dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:config/spring*.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	  </servlet>
+	  
+	  <servlet-mapping>
+		<servlet-name>mvc-dispatcher</servlet-name>
+		<url-pattern>/</url-pattern>
+	  </servlet-mapping>
+
+
+2.spring-mvc.xml
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<beans xmlns="http://www.springframework.org/schema/beans"  
+	    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"  
+	    xmlns:mvc="http://www.springframework.org/schema/mvc"  
+	    xsi:schemaLocation="  
+		http://www.springframework.org/schema/beans  
+		http://www.springframework.org/schema/beans/spring-beans.xsd  
+		http://www.springframework.org/schema/context   
+		http://www.springframework.org/schema/context/spring-context.xsd  
+		http://www.springframework.org/schema/mvc  
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+		<!-- 启动注解 -->
+		<mvc:annotation-driven/>
+		
+		<!-- 扫描包路径 -->
+		<context:component-scan base-package="com.love.business"/>
+		
+		<!-- xml使用 / 拦截了所有的请求，会影响到静态资源文件的获取,页面上引用的css，js等效果不起作用了,所以要启用 静态资源访问 -->
+		<mvc:resources location="/static/**" mapping="/static/"></mvc:resources>
+		
+		<!-- 视图解析器,负责jsp页面,必须放在最后面 -->
+		<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+			<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" /> 
+			<property name="prefix" value="/WEB-INF/jsps/"></property>
+			<property name="suffix" value=".jsp"></property>		
+		</bean>
+	 </beans>
+
+3.MainController.java
+
+	package com.love.business.controller;
+
+	import org.springframework.stereotype.Controller;
+	import org.springframework.web.bind.annotation.RequestMapping;
+	import org.springframework.web.servlet.ModelAndView;
+
+	@Controller
+	@RequestMapping("/main")
+	public class MainController {
+		
+		@RequestMapping("/success")
+		public ModelAndView success(){
+			ModelAndView mv = new ModelAndView();
+			mv.addObject("name", "welcome to computer world");
+			mv.setViewName("success");
+			return mv;
+					
+		}
+	}
+
+
+增加framemarker
+
+1.pom.xml增加
+	<!-- Freemarker组件 -->
+		<dependency>
+		  <groupId>org.freemarker</groupId>
+		  <artifactId>freemarker</artifactId>
+		  <version>${freemarker.version}</version>
+		</dependency>
+	  </dependencies>
+2.spring-framemarker.xml
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<beans
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns="http://www.springframework.org/schema/beans"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd"
+		default-lazy-init="true">
+		<!-- ApplicationContext实现的默认行为就是在启动时将所有singleton bean提前进行实例化。提前实例化意味着作为初始化过程的一部分，ApplicationContext实例会创建并配置所有的singleton bean。通常情况下这是件好事，因为这样在配置中的任何错误就会即刻被发现（否则的话可能要花几个小时甚至几天）。
+	有时候这种默认处理可能并不是你想要的。如果你不想让一个singleton bean在ApplicationContext实现在初始化时被提前实例化，那么可以将bean设置为延迟实例化。一个延迟初始化bean将告诉IoC 容器是在启动时还是在第一次被用到时实例化。 -->
+		<!-- 加载FreeMarker配置文件 -->
+		<bean id="freemarkerConfigFile" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+			<property name="location" value="classpath:config/freemarker.properties" />
+		</bean>
+		
+		<!-- 配置FreeMarker的模板路径 -->
+		<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+			<property name="freemarkerSettings" ref="freemarkerConfigFile" />
+			<property name="templateLoaderPaths">
+				<list>
+					<value>/ftl/</value>
+					<value>/ftl/mobile/</value>
+				</list>
+			</property>
+			
+		</bean>
+		
+		<!-- 配置freeMarker视图解析器 -->
+		<bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+			<!-- ftl文件名前缀 -->
+			<property name="prefix" value=""/>
+			<!-- ftl文件名后缀 -->
+			<property name="suffix" value=".html" />
+			<property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView" />
+			<property name="contentType" value="text/html;charset=UTF-8" />
+			<!-- 将请求和会话属性作为变量暴露给FreeMarker模板使用 ，要做到这一点，可以设置exposeRequestAttributes或者exposeSessionAttributes为true-->
+			<property name="exposeRequestAttributes" value="true" />
+			<property name="exposeSessionAttributes" value="true" />
+			 <!-- 使用这些宏，必须设置FreeMarkerViewResolver的exposeMacroHelpers属性为true -->  
+			<property name="exposeSpringMacroHelpers" value="true" />
+			<property name="allowSessionOverride" value="true"/>
+			<property name="cache" value="true" />
+			<property name="order" value="1"/>
+		</bean>
+
+	</beans>
+
+3. framemarker.properties
+	##如果变量是null,转化为空字符串,比如做比较的时候按照空字符串做比较
+	classic_compatible=true 
+	##去掉多余的空格，非常有用
+	whitespace_stripping=true
+	#template_update_delay=3600 ## 模板更新事件,设置为1秒，正式环境设置为3600秒
+	##中国
+	locale=zh_CN 
+	##编码utf-8
+	default_encoding=utf-8
+	##url编码utf8
+	url_escaping_charset=utf-8
+	##显示日期格式
+	date_format=yyyy-MM-dd
+	##显示时间格式
+	time_format=HH:mm:Ss
+	##显示日期格式
+	datetime_format=yyyy-MM-dd HH:mm:ss
+	##数字显示格式
+	number_format=\#0.\#\#\#\#\#
+	##boolean显示格式
+	boolean_format=true,false
+
+
+mybatis
+
+	1.spring-mybatis.xml
+	<?xml version="1.0" encoding="UTF-8"?>
+	<beans xmlns="http://www.springframework.org/schema/beans"
+	       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	       xmlns:context="http://www.springframework.org/schema/context"
+		   xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+	       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	        http://www.springframework.org/schema/beans/spring-beans.xsd 
+	        http://www.springframework.org/schema/context 
+	        http://www.springframework.org/schema/context/spring-context.xsd
+	        http://mybatis.org/schema/mybatis-spring 
+	        http://mybatis.org/schema/mybatis-spring.xsd">	
+	   
+	   <!-- 参数配置文件 -->
+	   <context:property-placeholder location="classpath:config/config.properties"/>
+	
+	   <!-- 配置数据库数据源 -->
+	   <bean id="dataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource">   
+			<!-- 数据库连接池别名 -->
+			<property name="alias" value="${proxool.alias}" />
+			<!-- 数据库连接用户名密码 -->
+			<property name="delegateProperties" value="user=${jdbc.userName},password=${jdbc.password}" />
+			<!-- 数据库驱动 -->
+			<property name="driver" value="${jdbc.driverClassName}" />
+			<!-- 数据库连接字符串 -->
+			<property name="driverUrl" value="${jdbc.url}" />
+			<!-- 必须在这里也设置user和password，但是 proxool却不使用它，或许是个bug-->
+			<property name="user" value="${jdbc.userName}" />
+			<property name="password" value="${jdbc.password}" />
+			<!-- 一个线程持有一个连接的最长时间(默认5分钟，单位毫秒)，管这个连接是否处于 active 状态，到达时间就会被清除掉。 -->
+			<property name="maximumActiveTime" value="${proxool.maximumActiveTime}" />
+			<!-- 最大连接数(默认5个),超过了这个连接数,再有请求时,就排在队列中等候,最大的等待请求数由maximum-new-connections决定 -->
+			<property name="maximumConnectionCount" value="${proxool.maximumConnectionCount}" />
+			<!-- 最小连接数(默认2个) -->
+			<property name="minimumConnectionCount" value="${proxool.minimumConnectionCount}" />
+			<!-- 自动侦测各个连接状态的时间间隔(毫秒),侦测到空闲的连接就马上回收,超时的销毁 默认30秒-->
+			<property name="houseKeepingSleepTime" value="${proxool.houseKeepingSleepTime}" />
+			<!-- 没有空闲连接可以分配而在队列中等候的最大请求数,超过这个请求数的用户连接就不会被接受 -->
+			<property name="simultaneousBuildThrottle" value="${proxool.simultaneousBuildThrottle}" />
+			<!-- 最少保持的空闲连接数(默认2个) -->
+			<property name="prototypeCount" value="${proxool.prototypeCount}" />
+			<!-- 在使用之前测试 -->
+			<property name="testBeforeUse" value="${proxool.testBeforeUse}" />
+			<!-- 用于保持连接的测试语句 -->
+			<property name="houseKeepingTestSql" value="${proxool.houseKeepingTestSql}" />
+			<!-- 如果为true,那么每个被执行的SQL语句将会在执行期被log记录(DEBUG LEVEL) -->
+			<property name="trace" value="${proxool.trace}" />	
+	   </bean>
+	   
+	   <!-- 配置sqlSessionFactory对象 -->
+	   <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	   		<!-- 注入数据库连接池 -->
+	   		<property name="dataSource" ref="dataSource"/>
+	   		<!-- 配置mysql 全局配置文件,mybatis-config.xml -->
+	   		<property name="configLocation" value="classpath:config/mybatis-config.xml"></property>
+	   		<!-- 扫描entity包，使用别名,多个用;分开 -->
+	   		<property name="typeAliasesPackage" value="classpath:com.love.business.entity"/>
+	   		<!-- 扫描sql配置文件：mapper需要的xml文件 -->
+	   		<property name="mapperLocations" value="classpath:mapper/*.xml"/>
+	   </bean>
+	   
+	   <!-- 用来扫描mapper接口  -->
+	   <mybatis:scan base-package="com.love.business.dao"/>
+	</beans>
+
+2.mybatis-config.xml
+	<?xml version="1.0" encoding="UTF-8" ?>
+	<!DOCTYPE configuration
+	        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+	        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+	 <configuration>
+	 	<!-- 配置全局属性 -->
+	 	<settings>
+	 		<!-- 使用jdbc的getGeneratekeys获取自增主键值 -->
+	 		<setting name="useGeneratedKeys" value="true"/>
+	 		<!-- 使用列别名替换别名，默认true -->
+	 		<setting name="useColumnLabel" value="true"/>
+	 		<!-- 开启驼峰命名转换 -->
+	 		<setting name="mapUnderscoreToCamelCase" value="true"/>
+	 	</settings>
+	 </configuration>
+	 
+3.Admin.java
+4.IAdminDao.java
+	<?xml version="1.0" encoding="UTF-8"?>
+	<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.love.mvc.dao.IAdminDao">
+		<select id="query" resultType="com.love.mvc.entity.Admin">
+			select * from es_admin where username=#{username}
+		</select>
+	</mapper>
+5.IAdminDao.xml
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.love.business.dao.IAdminDao">
+		<select id="query" resultType="com.love.business.entity.Admin">
+			select * from es_admin where username=#{username}
+		</select>
+	</mapper>
+	
+6.controller
+
+	package com.love.business.controller;
+	
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.beans.factory.annotation.Value;
+	import org.springframework.stereotype.Controller;
+	import org.springframework.web.bind.annotation.RequestMapping;
+	import org.springframework.web.servlet.ModelAndView;
+	
+	import com.love.business.entity.Admin;
+	import com.love.business.service.IAdminService;
+	
+	@Controller
+	@RequestMapping("/main")
+	public class MainController {
+		
+		@Autowired
+		private IAdminService adminService;
+		
+		@Value("${jdbc.driverClassName}")
+		private String driver_name;
+		/*@RequestMapping("/success")//jsp
+		public ModelAndView success(){
+			ModelAndView mv = new ModelAndView();
+			mv.addObject("name", "welcome to computer world");
+			mv.setViewName("success");
+			return mv;
+					
+		}*/
+		
+		//framemarker
+		@RequestMapping("/success")
+		public ModelAndView success(){
+			ModelAndView mv = new ModelAndView();
+			mv.addObject("name", "welcome to computer world");
+			Admin admin = adminService.query("admin");
+			mv.addObject("admin", admin);
+			
+			System.out.println(driver_name);
+			mv.setViewName("success");
+			return mv;
+					
+		}
+	}
+	
+
+
