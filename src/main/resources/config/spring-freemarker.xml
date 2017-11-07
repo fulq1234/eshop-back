@@ -17,8 +17,8 @@
 		<property name="freemarkerSettings" ref="freemarkerConfigFile" />
 		<property name="templateLoaderPaths">
 			<list>
-				<value>/ftl/</value>
-				<value>/ftl/mobile/</value>
+				<value>/admin/</value>
+				<value>/admin/mobile/</value>
 			</list>
 		</property>
 		
@@ -39,7 +39,7 @@
 		<property name="exposeSpringMacroHelpers" value="true" />
 		<property name="allowSessionOverride" value="true"/>
 		<property name="cache" value="true" />
-		<property name="order" value="1"/>
+		<property name="order" value="2"/>
 	</bean>
 
 </beans>

@@ -95,9 +95,9 @@ public class AESUtil {
 	}
 
 	public static void main(String[] args) throws Exception {
-		String jiami = encrypt("admin", "abc", null);
+		String jiami = encrypt("admin", "ldgx", null);
 		System.out.println(jiami);
-		String jiemi = decrypt("0709C66FC6AB7A0DC52690EA733C44CF", "abc", null);
+		String jiemi = decrypt("1B88C81D3C8D674B7CC9AC4527B3E061", "ldgx", null);
 		System.out.println(jiemi);
 	}
 }
