@@ -1,5 +1,7 @@
 package com.ldgx.eshop.service;
 
+import java.util.List;
+
 import com.ldgx.eshop.entity.Admin;
 
 public interface IAdminService {
@@ -10,4 +12,6 @@ public interface IAdminService {
 	 * @return
 	 */
 	public Admin login(Admin admin);
+	
+	public List<Admin> list(Admin admin);
 }

@@ -1,5 +1,7 @@
 package com.ldgx.eshop.service.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ public class AdminServiceImpl implements IAdminService{
 	public Admin login(Admin admin)  {
 		
 		//根据用户名查询数据库里面的管理员信息
-		Admin dbAdmin = adminDao.query(admin);
+		Admin dbAdmin = adminDao.query(admin.getUsername());
 		if(dbAdmin == null) {
 			return null;
 		}
@@ -48,6 +50,12 @@ public class AdminServiceImpl implements IAdminService{
 		
 		
 		return null;
+	}
+
+	@Override
+	public List<Admin> list(Admin admin) {
+		List<Admin> list = adminDao.list(admin);
+		return list;
 	}
 
 }
