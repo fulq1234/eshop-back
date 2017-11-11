@@ -12,7 +12,7 @@ import com.ldgx.eshop.service.IAdminService;
 
 @Controller
 @RequestMapping("/admin")
-public class AdminController extends GridController{
+public class AdminController{
 	
 	@Autowired
 	private IAdminService adminService;
@@ -42,8 +42,8 @@ sidePagination: "server"，对应的json格式必须为：
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
-	public PageBean<Admin> list(String username) {
-		PageBean<Admin> list = adminService.list(username,this.getLimit(),this.getOffset());		
+	public PageBean<Admin> list(String username,Integer limit,Integer offset) {
+		PageBean<Admin> list = adminService.list(username,limit,offset);		
 		return list;
 	}
 }
