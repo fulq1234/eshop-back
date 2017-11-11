@@ -54,8 +54,14 @@ public class AdminServiceImpl implements IAdminService{
 	}
 
 	@Override
-	public PageBean<Admin> list(Admin admin) {
-		List<Admin> list = adminDao.list(admin);
+	public PageBean<Admin> list(String username,Integer limit,Integer offset) {
+		if(limit == null){
+			limit = 10;
+		}
+		if(offset == null){
+			offset = 0;
+		}
+		List<Admin> list = adminDao.list(username,limit,offset);
 		
 		PageBean<Admin> page = new PageBean<Admin>();
 		page.setRows(list);

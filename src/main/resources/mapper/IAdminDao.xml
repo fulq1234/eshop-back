@@ -9,12 +9,14 @@
 		</where>
 	</select>
 	
-	<select id="list" resultType="com.ldgx.eshop.entity.Admin" parameterType="com.ldgx.eshop.entity.Admin">
+	<select id="list" resultType="com.ldgx.eshop.entity.Admin">
 		select * from tbl_admin 
 		<where>
 			<if test="username != null">
 				username = #{username}
 			</if>
 		</where>
+		
+		limit ${limit} offset ${offset}
 	</select>
 </mapper>
