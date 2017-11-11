@@ -3,6 +3,7 @@ package com.ldgx.eshop.service;
 import java.util.List;
 
 import com.ldgx.eshop.entity.Admin;
+import com.ldgx.eshop.entity.PageBean;
 
 public interface IAdminService {
 	
@@ -13,5 +14,5 @@ public interface IAdminService {
 	 */
 	public Admin login(Admin admin);
 	
-	public List<Admin> list(Admin admin);
+	public PageBean<Admin> list(Admin admin);
 }

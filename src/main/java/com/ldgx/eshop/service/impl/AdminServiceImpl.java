@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.ldgx.eshop.dao.IAdminDao;
 import com.ldgx.eshop.entity.Admin;
+import com.ldgx.eshop.entity.PageBean;
 import com.ldgx.eshop.service.IAdminService;
 import com.ldgx.eshop.util.AESUtil;
 
@@ -53,9 +54,16 @@ public class AdminServiceImpl implements IAdminService{
 	}
 
 	@Override
-	public List<Admin> list(Admin admin) {
+	public PageBean<Admin> list(Admin admin) {
 		List<Admin> list = adminDao.list(admin);
-		return list;
+		
+		PageBean<Admin> page = new PageBean<Admin>();
+		page.setRows(list);
+		page.setTotal(91);
+		page.setPage(1);
+		page.setTotalPage(5);
+		page.setLimit(0);
+		return page;
 	}
 
 }
