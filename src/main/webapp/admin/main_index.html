@@ -33,17 +33,26 @@
     	                      title: '状态',
     	                      field: 'status',
     	                      align: 'center'
-    	                  }/* 
+    	                  }, 
     	                  {
     	                      title: '操作',
     	                      field: 'id',
     	                      align: 'center',
-    	                      formatter:function(value,row,index){  
-    	                   var e = '<a href="#" mce_href="#" onclick="edit(\''+ row.id + '\')">编辑</a> ';  
-    	                   var d = '<a href="#" mce_href="#" onclick="del(\''+ row.id +'\')">删除</a> ';  
-    	                        return e+d;  
+    	                      formatter:function(value,row,index){ 
+    	                    	  
+    	                    	  //admin没有编辑和删除的功能，
+    	                    	  if(value == 1){
+    	                    	  		return "";
+    	                    	  }
+    	                    	  
+    	                    	  
+    	       	                   var e = '<a href="#" onclick="openModify(\''+ row.id + '\')">编辑</a> ';  
+    	    	                   var d = '<a href="#" onclick="del(\''+ row.id +'\')">删除</a> ';  
+    	    	                   return e+d; 
+    	                    		  
+    	                    	  
     	                    } 
-    	                  } */
+    	                  } 
     	              ]
     	      });
       }
@@ -51,12 +60,11 @@
       
       //打开新增窗口
       function openAdd(){
-    	  
     	  layer.open({
     		  type: 1,
     		  title: false,
     		  closeBtn: 0,
-    		  area: '516px',
+    		  area: '688px',
     		  skin: 'layui-layer-nobg', //没有背景色
     		  shadeClose: true,
     		  content: $('#tab_0')
@@ -74,10 +82,10 @@
     	  
     	  //$('#myform').serialize()
     	  //加了判断
-    	  var check = doCheck();
+    	  /* var check = doCheck();
     	  if(!check){
     		  return false;
-    	  }
+    	  } */
     	  
     	  var param = "${ctx}/admin/save";
 
@@ -88,6 +96,7 @@
       		  param += "?status=0";
       		  
       	  }
+      	  
     	  //提交
     	  $.ajax({
         		  url : param,
@@ -95,7 +104,7 @@
         		  data : $('#subForm').serialize(),
         		  dataType : "json",
         		  success : function(data){
-        			  if(!data || !data.ok){
+        			  if(!data){
         				  layer.alert("操作失败");
         				  return false;
         			  }
@@ -104,6 +113,17 @@
         				  return false;
         			  }
         			  layer.alert(data.content);
+        			  
+        			  //刷新 datatable
+        			  $('#table-large-columns').bootstrapTable(  
+       		              "refresh",  
+       		              {  
+       		                  url:"${ctx}/admin/list"  
+       		              }  
+        		      ); 
+        			  
+        			  //关闭layer窗口
+        			  layer.closeAll();
         		  },
         		  error:function(data){
         			  console.log(data);
@@ -117,14 +137,14 @@
       }
       
       
-    //验证方法
+   /*  //验证方法
     function doCheck(){
 
-  	  var username = $("[name=username]").val();
-  	  var password = $("[name=password]").val();
-  	  var password2 = $("[name=password2]").val();
-  	  var statusB = $("[name=status]").prop("checked");
-      /*false: "",null,undefined,*/
+  	  var username = $("#tab_0").find("[name=username]").val();
+  	  var password = $("#tab_0").find("[name=password]").val();
+  	  var password2 = $("#tab_0").find("#password2").val();
+  	  var statusB = $("#tab_0").find("[name=status]").prop("checked");
+      
   	  if(!username){
   		  layer.alert('用户名不能为空');
   		  return false;
@@ -149,6 +169,17 @@
   	  }
   	  
       return true;
+    } */
+    
+    //修改方法
+    function openModify(id){
+    	openAdd(id);
+    }
+    
+    
+    //修改方法
+    function doModify(){
+    	
     }
 </script>
 
@@ -233,15 +264,7 @@
 									
 									
 									
-									 <table id="table-large-columns" >
-									<!--  <thead>
-									        <tr>
-									            <th data-field="id">ID</th>
-									            <th data-field="username">用户名</th>
-									            <th data-field="create_time">创建时间</th>
-									        </tr>
-									    </thead> -->
-									</table> 
+									 <table id="table-large-columns" ></table> 
 									
                                  </div>
                             </div>
@@ -256,7 +279,9 @@
          </div>
         <!-- END CONTAINER -->
         
- <#--弹出框-->
+        
+        
+ <#--新增弹出框-->
   <div class="tab-pane active" id="tab_0" style="display:none;">
       <div class="portlet box green">
           <div class="portlet-title">
@@ -277,7 +302,7 @@
                           </label>
                           <div class="col-md-4">
                               <input type="text" class="form-control" name="username" />
-                              <span class="help-block"> Provide your username </span>
+                              <!-- <span class="help-block">请输入用户名</span> -->
                           </div>
                       </div>
                      <div class="form-group">
@@ -286,7 +311,7 @@
                           </label>
                           <div class="col-md-4">
                               <input type="password" class="form-control" name="password" />
-                              <span class="help-block"> Provide your password </span>
+                              <!-- <span class="help-block">请输入密码</span> -->
                           </div>
                       </div>
                      <div class="form-group">
@@ -294,16 +319,15 @@
                               <span class="required"> * </span>
                           </label>
                           <div class="col-md-4">
-                              <input type="text" class="form-control" name="password2" />
-                              <span class="help-block"> Again your password </span>
+                              <input type="password" class="form-control" id="password2" />
+                              <!-- <span class="help-block">请重复输入密码</span> -->
                           </div>
                       </div>
                      <div class="form-group">
                           <label class="control-label col-md-3">状态
                           </label>
                           <div class="col-md-4">
-                              <input type="radio" class="form-control" id="status" />
-                             
+                              <input type="checkbox" checked class="make-switch" id="status" data-size="small">
                           </div>
                       </div>
                       
@@ -312,7 +336,58 @@
                       <div class="row">
                           <div class="col-md-offset-3 col-md-9">
                               <button type="button" class="btn btn-circle green" onclick="doSave()">确定</button>
-                              <button type="button" class="btn btn-circle grey-salsa btn-outline" onclick="doClose()">Cancel</button>
+                              <button type="button" class="btn btn-circle grey-salsa btn-outline" onclick="doClose()">关闭</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+              <!-- END FORM-->
+          </div>
+      </div>
+ </div>
+ 
+ 
+ 
+ <#--修改弹出框-->
+  <div class="tab-pane active" id="tab_2" style="display:none;">
+      <div class="portlet box green">
+          <div class="portlet-title">
+              <div class="caption">
+                  <i class="fa fa-gift"></i>新增</div>
+              <!-- <div class="tools">
+                  
+                  <a href="javascript:;" class="remove"> </a>
+              </div> -->
+          </div>
+          <div class="portlet-body form">
+              <!-- BEGIN FORM-->
+              <form id="subForm" class="form-horizontal">
+              	<input type="hidden" name="id" id="id"/>
+                  <div class="form-body">
+                     <div class="form-group">
+                          <label class="control-label col-md-3">用户名
+                              <span class="required"> * </span>
+                          </label>
+                          <div class="col-md-4">
+                              <input type="text" class="form-control" name="username" />
+                              <!-- <span class="help-block">请输入用户名</span> -->
+                          </div>
+                      </div>
+                    
+                     <div class="form-group">
+                          <label class="control-label col-md-3">状态
+                          </label>
+                          <div class="col-md-4">
+                              <input type="checkbox" checked class="make-switch" id="status" data-size="small">
+                          </div>
+                      </div>
+                      
+                  </div>
+                  <div class="form-actions">
+                      <div class="row">
+                          <div class="col-md-offset-3 col-md-9">
+                              <button type="button" class="btn btn-circle green" onclick="doModify()">确定</button>
+                              <button type="button" class="btn btn-circle grey-salsa btn-outline" onclick="doClose()">关闭</button>
                           </div>
                       </div>
                   </div>
