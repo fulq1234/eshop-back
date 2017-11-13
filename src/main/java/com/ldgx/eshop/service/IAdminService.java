@@ -29,5 +29,17 @@ public interface IAdminService {
 	 * @return
 	 */
 	public RestBean save(Admin admin);
+	
+	/**
+	 * 修改
+	 * @param admin
+	 */
+	public void modify(Admin admin);
+	
+	/**
+	 * 删除
+	 * @param id
+	 */
+	public void del(int id);
 
 }

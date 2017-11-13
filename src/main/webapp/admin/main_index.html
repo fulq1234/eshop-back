@@ -4,59 +4,108 @@
   
         <script type="text/javascript">
       window.onload=function(){
-    	  var $table = $('#table-large-columns');
-    		
-    		$table.bootstrapTable('destroy');//这里必须要添加这个销毁，否则新增、修改、查看的切换可编辑列表中的数据可能加载出现问题。
-    		 
-    	    $table.bootstrapTable({
-    	    url: "${ctx}/admin/list", 
-    	    dataType: "json",
-    	    pagination: true, //分页
-    	    singleSelect: false,
-    	   // data-locale:"zh-US", //表格汉化
-    	    //search: true, //显示搜索框
-    	    sidePagination: "server", //服务端处理分页
-    	          columns: [
-    	                  {
-    	                    title: 'ID',
-    	                      field: 'id',
-    	                      align: 'center',
-    	                      valign: 'middle'
-    	                  }, 
-    	                  {
-    	                      title: '用户名',
-    	                      field: 'username',
-    	                      align: 'center',
-    	                      valign: 'middle',
-    	                  }, 
-    	                  {
-    	                      title: '状态',
-    	                      field: 'status',
-    	                      align: 'center'
-    	                  }, 
-    	                  {
-    	                      title: '操作',
-    	                      field: 'id',
-    	                      align: 'center',
-    	                      formatter:function(value,row,index){ 
-    	                    	  
-    	                    	  //admin没有编辑和删除的功能，
-    	                    	  if(value == 1){
-    	                    	  		return "";
-    	                    	  }
-    	                    	  
-    	                    	  
-    	       	                   var e = '<a href="#" onclick="openModify(\''+ row.id + '\')">编辑</a> ';  
-    	    	                   var d = '<a href="#" onclick="del(\''+ row.id +'\')">删除</a> ';  
-    	    	                   return e+d; 
-    	                    		  
-    	                    	  
-    	                    } 
-    	                  } 
-    	              ]
-    	      });
+    	  //1.分页显示
+    	  dataTable();
+    	  
+    	  //验证新增方法
+    	  validAdd();
+    	  
+
       }
       
+      /**
+      * 分页显示数据
+      **/
+      function dataTable(){
+    	  var $table = $('#table-large-columns');
+  		
+  		$table.bootstrapTable('destroy');//这里必须要添加这个销毁，否则新增、修改、查看的切换可编辑列表中的数据可能加载出现问题。
+  		 
+  	    $table.bootstrapTable({
+  	    url: "${ctx}/admin/list", 
+  	    dataType: "json",
+  	    pagination: true, //分页
+  	    singleSelect: false,
+  	   // data-locale:"zh-US", //表格汉化
+  	    //search: true, //显示搜索框
+  	    sidePagination: "server", //服务端处理分页
+  	          columns: [
+  	                  {
+  	                    title: 'ID',
+  	                      field: 'id',
+  	                      align: 'center',
+  	                      valign: 'middle'
+  	                  }, 
+  	                  {
+  	                      title: '用户名',
+  	                      field: 'username',
+  	                      align: 'center',
+  	                      valign: 'middle',
+  	                  }, 
+  	                  {
+  	                      title: '状态',
+  	                      field: 'status',
+  	                      align: 'center',
+  	                      formatter:function(value,row,index){
+  	                    	  if(value == 1){
+  	                    		  return "启用";
+  	                    	  }
+	                    		  return "禁用";
+  	                      }
+  	                  }, 
+  	                  {
+  	                      title: '操作',
+  	                      field: 'id',
+  	                      align: 'center',
+  	                      formatter:function(value,row,index){ 
+  	                    	  
+  	                    	  //admin没有编辑和删除的功能，
+  	                    	  if(value == 1){
+  	                    	  		return "";
+  	                    	  }
+  	                    	  
+  	                    	  
+  	       	                   var e = '<a href="#" onclick="openModify('+ row.id + ',\'' + row.username + '\',' + row.status + ')">编辑</a> ';  
+  	    	                   var d = '<a href="#" onclick="del(\''+ row.id +'\')">删除</a> ';  
+  	    	                   return e+d; 
+  	                    		  
+  	                    	  
+  	                    } 
+  	                  } 
+  	              ]
+  	      });
+      }
+      
+      
+      //验证新增窗口
+      function validAdd(){
+    	
+    	  $("#addForm").validate({
+    		  rules:{
+    			  username:{
+    				  required:true,
+    				  maxlength:32
+    			  },
+    			  password:{
+    				  required:true,
+    				  maxlength:32
+    			  }    			  
+    		  },
+    		  highlight: function (element) { // hightlight error inputs
+                  $(element)
+                  .closest('.form-group').addClass('has-error'); // set error class to the control group
+          	  }, 
+          	  success: function (label) {
+                  label
+                  .closest('.form-group').removeClass('has-error'); // set success class to the control group
+          	  },
+          	  submitHandler:function(){//操作成功后
+    			  doSave();
+    		  }
+    	  });
+      }
+      
+    
       
       //打开新增窗口
       function openAdd(){
@@ -82,26 +131,30 @@
     	  
     	  //$('#myform').serialize()
     	  //加了判断
-    	  /* var check = doCheck();
-    	  if(!check){
-    		  return false;
-    	  } */
-    	  
-    	  var param = "${ctx}/admin/save";
+      	  var password = $("#addForm").find("[name=password]").val();
+      	  var password2 = $("#addForm").find("#password2").val();     
+      	  
+      	  //两个密码要一样
+      	 if(password2!=password){
+      		layer.alert("两个密码要一样");
+      		return false;
+      	  }
+      	  
+      	/*  var param = "${ctx}/admin/save";
 
-      	  var statusB = $("#status").prop("checked");
+      	  var statusB = $("#addForm").find("#status").prop("checked");
       	  if(statusB){
       		  param += "?status=1";
       	  }else{
       		  param += "?status=0";
       		  
-      	  }
+      	  } */
       	  
     	  //提交
     	  $.ajax({
-        		  url : param,
+        		  url : "${ctx}/admin/save",
         		  type : "post",
-        		  data : $('#subForm').serialize(),
+        		  data : $('#addForm').serialize(),
         		  dataType : "json",
         		  success : function(data){
         			  if(!data){
@@ -115,18 +168,13 @@
         			  layer.alert(data.content);
         			  
         			  //刷新 datatable
-        			  $('#table-large-columns').bootstrapTable(  
-       		              "refresh",  
-       		              {  
-       		                  url:"${ctx}/admin/list"  
-       		              }  
-        		      ); 
+         			  $('#table-large-columns').bootstrapTable("refresh",{url:"${ctx}/admin/list" }); 
         			  
         			  //关闭layer窗口
         			  layer.closeAll();
         		  },
         		  error:function(data){
-        			  console.log(data);
+        			  layer.alert("操作失败");
         		  }
     	  });
     	  
@@ -137,49 +185,111 @@
       }
       
       
-   /*  //验证方法
-    function doCheck(){
-
-  	  var username = $("#tab_0").find("[name=username]").val();
-  	  var password = $("#tab_0").find("[name=password]").val();
-  	  var password2 = $("#tab_0").find("#password2").val();
-  	  var statusB = $("#tab_0").find("[name=status]").prop("checked");
-      
-  	  if(!username){
-  		  layer.alert('用户名不能为空');
-  		  return false;
-  	  }
-  	 
-  	  //密码不能为空
-  	  if(!password){
-  		layer.alert("密码不能为空");
-  		return false;
-  	  }
-  	  
-  	  //重复密码不能为空
-  	if(!password2){
-  		layer.alert("重复密码不能为空");
-  		return false;
-  	  }
-  	  
-  	  //两个密码要一样
-  	if(password2!=password){
-  		layer.alert("两个密码要一样");
-  		return false;
-  	  }
-  	  
-      return true;
-    } */
+   
     
-    //修改方法
-    function openModify(id){
-    	openAdd(id);
+   /**
+           修改方法
+           
+   **/
+    function openModify(id,username,status){
+	   $("#tab_1").find("#id").val(id);
+	   $("#tab_1").find("input[name='username']").val(id);
+	   $("#tab_1").find("input[name='status']").val(status);
+	   
+	    //以后
+	    if(status == 1){
+	    	$("#modify_status1").click();
+			//$("#modify_status0").attr("checked",false);
+	   }else{		  
+		  // $("#modify_status1").attr("checked",false);
+		   $("#modify_status0").click();
+	   }  
+ 
+ 	  
+  	  layer.open({
+		  type: 1,
+		  title: false,
+		  closeBtn: 0,
+		  area: '688px',
+		  skin: 'layui-layer-nobg', //没有背景色
+		  shadeClose: true,
+		  content: $('#tab_1')
+		});
     }
     
     
     //修改方法
     function doModify(){
+   	  //提交
+   	  $.ajax({
+       		  url : "${ctx}/admin/modify",
+       		  type : "post",
+       		  data : $('#modifyForm').serialize(),
+       		  dataType : "json",
+       		  success : function(data){
+       			  if(!data){
+       				  layer.alert("操作失败");
+       				  return false;
+       			  }
+       			  if(!data.ok){
+       				  layer.alert("操作失败," + data.content);
+       				  return false;
+       			  }
+       			  layer.alert(data.content);
+       			  
+       			  //刷新 datatable
+         		  $('#table-large-columns').bootstrapTable("refresh",{url:"${ctx}/admin/list" }); 
+       			  
+       			  //关闭layer窗口
+       			  layer.closeAll();
+       		  },
+       		  error:function(data){
+       			  layer.alert("操作失败");
+       		  }
+   	  });
+    }
+    
+    //删除功能
+    function del(id){
+    	layer.confirm('您确定要删除该数据吗?', {
+   		   btn: ['确定','取消'] //按钮
+   		}, function(){
+   			doDel(id);
+   		}, function(){
+   		    layer.closeAll();
+   		});
+   	
     	
+    }
+    
+    function doDel(id){
+
+   	  //提交
+   	  $.ajax({
+       		  url : "${ctx}/admin/del?id="+id,
+       		  type : "post",
+       		  dataType : "json",
+       		  success : function(data){
+       			  if(!data){
+       				  layer.alert("操作失败");
+       				  return false;
+       			  }
+       			  if(!data.ok){
+       				  layer.alert("操作失败," + data.content);
+       				  return false;
+       			  }
+       			  layer.alert(data.content);
+       			  
+       			  //刷新 datatable
+       			  $('#table-large-columns').bootstrapTable("refresh",{url:"${ctx}/admin/list" }); 
+       			  
+       			  //关闭layer窗口
+       			  layer.closeAll();
+       		  },
+       		  error:function(data){
+       			  layer.alert("操作失败");
+       		  }
+   	  });
     }
 </script>
 
@@ -292,16 +402,17 @@
                   <a href="javascript:;" class="remove"> </a>
               </div> -->
           </div>
+         
           <div class="portlet-body form">
               <!-- BEGIN FORM-->
-              <form id="subForm" class="form-horizontal">
+              <form id="addForm" class="form-horizontal">
                   <div class="form-body">
                      <div class="form-group">
                           <label class="control-label col-md-3">用户名
                               <span class="required"> * </span>
                           </label>
                           <div class="col-md-4">
-                              <input type="text" class="form-control" name="username" />
+                              <input type="text" class="form-control" name="username" class="{required:true,maxlength:32}"/>
                               <!-- <span class="help-block">请输入用户名</span> -->
                           </div>
                       </div>
@@ -310,7 +421,7 @@
                               <span class="required"> * </span>
                           </label>
                           <div class="col-md-4">
-                              <input type="password" class="form-control" name="password" />
+                              <input type="password" class="form-control" name="password" class="{required:true}"/>
                               <!-- <span class="help-block">请输入密码</span> -->
                           </div>
                       </div>
@@ -323,19 +434,20 @@
                               <!-- <span class="help-block">请重复输入密码</span> -->
                           </div>
                       </div>
-                     <div class="form-group">
+                     
+                      <div class="form-group">
                           <label class="control-label col-md-3">状态
                           </label>
                           <div class="col-md-4">
-                              <input type="checkbox" checked class="make-switch" id="status" data-size="small">
+                              启用<input type="radio" name="status" value="1" checked class="radio">
+                              禁用<input type="radio" name="status" value="0" class="radio">
                           </div>
                       </div>
-                      
                   </div>
                   <div class="form-actions">
                       <div class="row">
                           <div class="col-md-offset-3 col-md-9">
-                              <button type="button" class="btn btn-circle green" onclick="doSave()">确定</button>
+                              <button type="submit" class="btn btn-circle green">确定</button>
                               <button type="button" class="btn btn-circle grey-salsa btn-outline" onclick="doClose()">关闭</button>
                           </div>
                       </div>
@@ -343,17 +455,18 @@
               </form>
               <!-- END FORM-->
           </div>
+      	 
       </div>
  </div>
  
  
  
  <#--修改弹出框-->
-  <div class="tab-pane active" id="tab_2" style="display:none;">
+  <div class="tab-pane active" id="tab_1" style="display:none;">
       <div class="portlet box green">
           <div class="portlet-title">
               <div class="caption">
-                  <i class="fa fa-gift"></i>新增</div>
+                  <i class="fa fa-gift"></i>修改</div>
               <!-- <div class="tools">
                   
                   <a href="javascript:;" class="remove"> </a>
@@ -361,7 +474,7 @@
           </div>
           <div class="portlet-body form">
               <!-- BEGIN FORM-->
-              <form id="subForm" class="form-horizontal">
+              <form id="modifyForm" class="form-horizontal">
               	<input type="hidden" name="id" id="id"/>
                   <div class="form-body">
                      <div class="form-group">
@@ -369,16 +482,17 @@
                               <span class="required"> * </span>
                           </label>
                           <div class="col-md-4">
-                              <input type="text" class="form-control" name="username" />
+                              <input type="text" class="form-control" name="username" disabled/>
                               <!-- <span class="help-block">请输入用户名</span> -->
                           </div>
                       </div>
                     
-                     <div class="form-group">
+                      <div class="form-group">
                           <label class="control-label col-md-3">状态
                           </label>
                           <div class="col-md-4">
-                              <input type="checkbox" checked class="make-switch" id="status" data-size="small">
+					                              启用<input type="radio" name="status" value="1" checked class="radio" id="modify_status1">
+					                              禁用<input type="radio" name="status" value="0" class="radio" id="modify_status0">
                           </div>
                       </div>
                       
@@ -396,5 +510,11 @@
           </div>
       </div>
  </div>
+ 
+ 
+ 
+                                
+                           
+                                    
  <#include "common/footer.html">      
    

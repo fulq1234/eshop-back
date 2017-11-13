@@ -7,13 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 import com.ldgx.eshop.dao.IAdminDao;
 import com.ldgx.eshop.entity.Admin;
 import com.ldgx.eshop.entity.PageBean;
 import com.ldgx.eshop.entity.RestBean;
 import com.ldgx.eshop.service.IAdminService;
 import com.ldgx.eshop.util.AESUtil;
+import com.ldgx.eshop.util.RestUtil;
 
 @Service
 public class AdminServiceImpl implements IAdminService{
@@ -83,13 +83,25 @@ public class AdminServiceImpl implements IAdminService{
 		int findAdminByUserName = adminDao.findAdminByUserName(admin.getUsername());
 		System.out.println(findAdminByUserName);
 		if(findAdminByUserName>0) {
-			return RestBean.getErrorResult("用户名重复");
+			return RestUtil.getErrorResult("用户名重复");
 		}
 		
 		//2.插入
 		adminDao.insert(admin);
 		
-		return RestBean.getSuccessResult("操作成功");
+		return RestUtil.getSuccessResult("操作成功");
+	}
+
+	@Override
+	public void modify(Admin admin) {
+		adminDao.update(admin);
+		
+	}
+
+	@Override
+	public void del(int id) {
+		adminDao.del(id);
+		
 	}
 
 }

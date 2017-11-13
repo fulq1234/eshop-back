@@ -10,6 +10,7 @@ import com.ldgx.eshop.entity.Admin;
 import com.ldgx.eshop.entity.PageBean;
 import com.ldgx.eshop.entity.RestBean;
 import com.ldgx.eshop.service.IAdminService;
+import com.ldgx.eshop.util.RestUtil;
 
 @Controller
 @RequestMapping("/admin")
@@ -58,5 +59,19 @@ sidePagination: "server"，对应的json格式必须为：
 	public RestBean save(Admin admin) {
 		RestBean rb = adminService.save(admin);
 		return rb;
+	}
+	
+	@RequestMapping("/modify")
+	@ResponseBody
+	public RestBean modify(Admin admin) {
+		adminService.modify(admin);
+		return RestUtil.getSuccessResult("操作成功");
+	}
+	
+	@RequestMapping("/del")
+	@ResponseBody
+	public RestBean del(int id) {
+		adminService.del(id);
+		return RestUtil.getSuccessResult("操作成功");
 	}
 }
