@@ -7,9 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import com.ldgx.eshop.dao.IAdminDao;
 import com.ldgx.eshop.entity.Admin;
 import com.ldgx.eshop.entity.PageBean;
+import com.ldgx.eshop.entity.RestBean;
 import com.ldgx.eshop.service.IAdminService;
 import com.ldgx.eshop.util.AESUtil;
 
@@ -39,6 +41,7 @@ public class AdminServiceImpl implements IAdminService{
 		//加密
 		try {
 			pagepwd = AESUtil.encrypt(pagepwd, "ldgx", null);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error("登录失败", e);
@@ -70,6 +73,23 @@ public class AdminServiceImpl implements IAdminService{
 		page.setTotalPage(5);
 		page.setLimit(0);
 		return page;
+	}
+
+	@Override
+	//@Transactional	
+	public RestBean save(Admin admin) {
+		
+		//1.先判断用户名是否重复
+		int findAdminByUserName = adminDao.findAdminByUserName(admin.getUsername());
+		System.out.println(findAdminByUserName);
+		if(findAdminByUserName>0) {
+			return RestBean.getErrorResult("用户名重复");
+		}
+		
+		//2.插入
+		adminDao.insert(admin);
+		
+		return RestBean.getSuccessResult("操作成功");
 	}
 
 }

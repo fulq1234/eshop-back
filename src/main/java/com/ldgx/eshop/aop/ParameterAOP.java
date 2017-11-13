@@ -1,6 +1,7 @@
 package com.ldgx.eshop.aop;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -18,7 +19,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class ParameterAOP {
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
-	//∂®“Â“ª∏ˆ«–√Ê
+	//ÂàáÂÖ•ÁÇπ
 	@Pointcut("execution (* com.ldgx.eshop.controller..*(..))")
 	private void cut() {
 		
@@ -28,11 +29,22 @@ public class ParameterAOP {
 	public Object around(ProceedingJoinPoint pjp) throws Throwable{
 		RequestAttributes ra = RequestContextHolder.getRequestAttributes();
         ServletRequestAttributes sra = (ServletRequestAttributes) ra;
+       //request
         HttpServletRequest request = sra.getRequest();
         
-		String ctx = request.getContextPath();//context path
-		logger.debug("cut EOPAOP");
-		request.getSession().setAttribute("ctx", ctx);
+        //session
+        HttpSession session = request.getSession();
+        
+        //‰øùÂ≠òctx
+        String session_ctx = (String) session.getAttribute("ctx");
+        if(session_ctx == null) {
+    		String ctx = request.getContextPath();//context path
+    		logger.debug("cut EOPAOP");
+    		request.getSession().setAttribute("ctx", ctx);        	
+        }
+        
+        
+        
 		Object object = pjp.proceed();
 		return object;
 	}

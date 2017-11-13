@@ -23,4 +23,28 @@ public interface IAdminDao {
 			@Param(value="username")String username,
 			@Param(value="limit")int limit,
 			@Param(value="offset")int offset);
+	
+	/**
+	 * 新增
+	 * @param admin
+	 */
+	public void insert(Admin admin);
+	
+	/**
+	 * 删除
+	 * @param username
+	 */
+	public void del(int id);
+	
+	/**
+	 * 更新
+	 * @param admin
+	 */
+	public void update(Admin admin);
+	/**
+	 * 查找用户名是否重复
+	 * @param username
+	 * @return
+	 */
+	public int findAdminByUserName(String username);
 }

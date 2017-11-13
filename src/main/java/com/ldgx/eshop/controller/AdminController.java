@@ -8,6 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ldgx.eshop.entity.Admin;
 import com.ldgx.eshop.entity.PageBean;
+import com.ldgx.eshop.entity.RestBean;
 import com.ldgx.eshop.service.IAdminService;
 
 @Controller
@@ -45,5 +46,17 @@ sidePagination: "server"，对应的json格式必须为：
 	public PageBean<Admin> list(String username,Integer limit,Integer offset) {
 		PageBean<Admin> list = adminService.list(username,limit,offset);		
 		return list;
+	}
+	
+	/**
+	 * 保存方法
+	 * @param admin
+	 * @return
+	 */
+	@RequestMapping("/save")
+	@ResponseBody
+	public RestBean save(Admin admin) {
+		RestBean rb = adminService.save(admin);
+		return rb;
 	}
 }

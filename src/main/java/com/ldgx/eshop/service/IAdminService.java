@@ -3,6 +3,7 @@ package com.ldgx.eshop.service;
 
 import com.ldgx.eshop.entity.Admin;
 import com.ldgx.eshop.entity.PageBean;
+import com.ldgx.eshop.entity.RestBean;
 
 public interface IAdminService {
 	
@@ -21,4 +22,12 @@ public interface IAdminService {
 	 * @return
 	 */
 	public PageBean<Admin> list(String username,Integer limit,Integer offset);
+
+	/**
+	 * 保存
+	 * @param admin
+	 * @return
+	 */
+	public RestBean save(Admin admin);
+
 }

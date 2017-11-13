@@ -19,4 +19,24 @@
 		
 		limit ${limit} offset ${offset}
 	</select>
+	<!-- 查找用户名是否重复 -->
+	<select id="findAdminByUserName" parameterType="string" resultType="int">
+		select count(*)
+		from tbl_admin
+		where username=#{username}	
+	</select>
+	<insert id="insert" parameterType="com.ldgx.eshop.entity.Admin">
+	
+	insert into tbl_admin (username,password,status) values(#{username},#{password},#{status})
+	
+	</insert>
+	
+	<delete id="del">
+		delete from tbl_admin where id=#{id}
+	</delete>
+	
+	<update id="update" parameterType="com.ldgx.eshop.entity.Admin">
+	
+		update tbl_admin set status=#{status} where id=#{id}
+	</update>
 </mapper>

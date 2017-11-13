@@ -14,7 +14,7 @@
     	    pagination: true, //分页
     	    singleSelect: false,
     	   // data-locale:"zh-US", //表格汉化
-    	    search: true, //显示搜索框
+    	    //search: true, //显示搜索框
     	    sidePagination: "server", //服务端处理分页
     	          columns: [
     	                  {
@@ -30,8 +30,8 @@
     	                      valign: 'middle',
     	                  }, 
     	                  {
-    	                      title: '密码',
-    	                      field: 'password',
+    	                      title: '状态',
+    	                      field: 'status',
     	                      align: 'center'
     	                  }/* 
     	                  {
@@ -47,6 +47,109 @@
     	              ]
     	      });
       }
+      
+      
+      //打开新增窗口
+      function openAdd(){
+    	  
+    	  layer.open({
+    		  type: 1,
+    		  title: false,
+    		  closeBtn: 0,
+    		  area: '516px',
+    		  skin: 'layui-layer-nobg', //没有背景色
+    		  shadeClose: true,
+    		  content: $('#tab_0')
+    		});
+      }
+      
+      
+      //关闭窗口
+      function doClose(){
+    	  layer.closeAll();
+      }
+      
+      //保存方法
+      function doSave(){
+    	  
+    	  //$('#myform').serialize()
+    	  //加了判断
+    	  var check = doCheck();
+    	  if(!check){
+    		  return false;
+    	  }
+    	  
+    	  var param = "${ctx}/admin/save";
+
+      	  var statusB = $("#status").prop("checked");
+      	  if(statusB){
+      		  param += "?status=1";
+      	  }else{
+      		  param += "?status=0";
+      		  
+      	  }
+    	  //提交
+    	  $.ajax({
+        		  url : param,
+        		  type : "post",
+        		  data : $('#subForm').serialize(),
+        		  dataType : "json",
+        		  success : function(data){
+        			  if(!data || !data.ok){
+        				  layer.alert("操作失败");
+        				  return false;
+        			  }
+        			  if(!data.ok){
+        				  layer.alert("操作失败," + data.content);
+        				  return false;
+        			  }
+        			  layer.alert(data.content);
+        		  },
+        		  error:function(data){
+        			  console.log(data);
+        		  }
+    	  });
+    	  
+    	  
+    	  
+    	
+    	  
+      }
+      
+      
+    //验证方法
+    function doCheck(){
+
+  	  var username = $("[name=username]").val();
+  	  var password = $("[name=password]").val();
+  	  var password2 = $("[name=password2]").val();
+  	  var statusB = $("[name=status]").prop("checked");
+      /*false: "",null,undefined,*/
+  	  if(!username){
+  		  layer.alert('用户名不能为空');
+  		  return false;
+  	  }
+  	 
+  	  //密码不能为空
+  	  if(!password){
+  		layer.alert("密码不能为空");
+  		return false;
+  	  }
+  	  
+  	  //重复密码不能为空
+  	if(!password2){
+  		layer.alert("重复密码不能为空");
+  		return false;
+  	  }
+  	  
+  	  //两个密码要一样
+  	if(password2!=password){
+  		layer.alert("两个密码要一样");
+  		return false;
+  	  }
+  	  
+      return true;
+    }
 </script>
 
 
@@ -86,7 +189,7 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="btn-group">
-                                                    <button id="sample_editable_1_new" class="btn sbold green"> 新增
+                                                    <button id="sample_editable_1_new" class="btn sbold green" onclick="openAdd()"> 新增
                                                         <i class="fa fa-plus"></i>
                                                     </button>
                                                 </div>
@@ -140,193 +243,7 @@
 									    </thead> -->
 									</table> 
 									
-                                    <!-- <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_1">
-                                        <thead>
-                                            <tr>
-                                                <th>
-                                                    <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
-                                                        <input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes" />
-                                                        <span></span>
-                                                    </label>
-                                                </th>
-                                                <th> Username </th>
-                                                <th> Email </th>
-                                                <th> Status </th>
-                                                <th> Joined </th>
-                                                <th> Actions </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        
-                                            <tr class="odd gradeX">
-                                                <td>
-                                                    <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
-                                                        <input type="checkbox" class="checkboxes" value="1" />
-                                                        <span></span>
-                                                    </label>
-                                                </td>
-                                                <td> foopl </td>
-                                                <td>
-                                                    <a href="mailto:userwow@gmail.com"> good@gmail.com </a>
-                                                </td>
-                                                <td>
-                                                    <span class="label label-sm label-info"> Info </span>
-                                                </td>
-                                                <td class="center"> 12.12.2011 </td>
-                                                <td>
-                                                    <div class="btn-group"> 
-                                                      <button class="btn btn-sm green btn-outline filter-cancel">
-                                                        <i class="fa fa-edit"></i> 修改
-                                                        </button>
-                                                       <button class="btn btn-sm red btn-outline filter-cancel">
-                                                        <i class="fa fa-times"></i> 删除
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                          
-                                            <tr class="odd gradeX">
-                                                <td>
-                                                    <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
-                                                        <input type="checkbox" class="checkboxes" value="1" />
-                                                        <span></span>
-                                                    </label>
-                                                </td>
-                                                <td> coop </td>
-                                                <td>
-                                                    <a href="mailto:userwow@gmail.com"> good@gmail.com </a>
-                                                </td>
-                                                <td>
-                                                    <span class="label label-sm label-info"> Info </span>
-                                                </td>
-                                                <td class="center"> 12.12.2011 </td>
-                                                <td>
-                                                    <div class="btn-group"> 
-                                                      <button class="btn btn-sm green btn-outline filter-cancel">
-                                                        <i class="fa fa-edit"></i> 修改
-                                                        </button>
-                                                       <button class="btn btn-sm red btn-outline filter-cancel">
-                                                        <i class="fa fa-times"></i> 删除
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                           
-                                            <tr class="odd gradeX">
-                                                <td>
-                                                    <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
-                                                        <input type="checkbox" class="checkboxes" value="1" />
-                                                        <span></span>
-                                                    </label>
-                                                </td>
-                                                <td> goop </td>
-                                                <td>
-                                                    <a href="mailto:userwow@gmail.com"> good@gmail.com </a>
-                                                </td>
-                                                <td>
-                                                    <span class="label label-sm label-warning"> Suspended </span>
-                                                </td>
-                                                <td class="center"> 12.12.2011 </td>
-                                                <td>
-                                                    <div class="btn-group"> 
-                                                      <button class="btn btn-sm green btn-outline filter-cancel">
-                                                        <i class="fa fa-edit"></i> 修改
-                                                        </button>
-                                                       <button class="btn btn-sm red btn-outline filter-cancel">
-                                                        <i class="fa fa-times"></i> 删除
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            
-                                            <tr class="odd gradeX">
-                                                <td>
-                                                    <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
-                                                        <input type="checkbox" class="checkboxes" value="1" />
-                                                        <span></span>
-                                                    </label>
-                                                </td>
-                                                <td> fop </td>
-                                                <td>
-                                                    <a href="mailto:userwow@gmail.com"> good@gmail.com </a>
-                                                </td>
-                                                <td>
-                                                    <span class="label label-sm label-warning"> Suspended </span>
-                                                </td>
-                                                <td class="center"> 12.12.2011 </td>
-                                                <td>
-                                                    <div class="btn-group"> 
-                                                      <button class="btn btn-sm green btn-outline filter-cancel">
-                                                        <i class="fa fa-edit"></i> 修改
-                                                        </button>
-                                                       <button class="btn btn-sm red btn-outline filter-cancel">
-                                                        <i class="fa fa-times"></i> 删除
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr class="odd gradeX">
-                                                <td>
-                                                    <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
-                                                        <input type="checkbox" class="checkboxes" value="1" />
-                                                        <span></span>
-                                                    </label>
-                                                </td>
-                                                <td> kop </td>
-                                                <td>
-                                                    <a href="mailto:userwow@gmail.com"> good@gmail.com </a>
-                                                </td>
-                                                <td>
-                                                    <span class="label label-sm label-warning"> Suspended </span>
-                                                </td>
-                                                <td class="center"> 12.12.2011 </td>
-                                                <td>
-                                                    <div class="btn-group"> 
-                                                      <button class="btn btn-sm green btn-outline filter-cancel">
-                                                        <i class="fa fa-edit"></i> 修改
-                                                        </button>
-                                                       <button class="btn btn-sm red btn-outline filter-cancel">
-                                                        <i class="fa fa-times"></i> 删除
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                           
-                                        </tbody>
-                                    </table> -->
-                                
-                                
-                                	<!-- 页码数位置begin -->
-									<!-- <div class="row"> 
-										<div class="col-md-5 col-sm-5">
-											<div class="dataTables_info" id="sample_1_info" role="status"
-												aria-live="polite">Showing 21 to 25 of 25 records</div>
-										</div>
-										<div class="col-md-7 col-sm-7">
-											<div class="dataTables_paginate paging_bootstrap_full_number"
-												id="sample_1_paginate">
-												<ul class="pagination" style="visibility: visible;">
-													<li class="prev"><a href="#" title="First"><i
-															class="fa fa-angle-double-left"></i></a></li>
-													<li class="prev"><a href="#" title="Prev"><i
-															class="fa fa-angle-left"></i></a></li>
-													<li><a href="#">1</a></li>
-													<li><a href="#">2</a></li>
-													<li><a href="#">3</a></li>
-													<li><a href="#">4</a></li>
-													<li class="active"><a href="#">5</a></li>
-													<li class="next disabled"><a href="#" title="Next"><i
-															class="fa fa-angle-right"></i></a></li>
-													<li class="next disabled"><a href="#" title="Last"><i
-															class="fa fa-angle-double-right"></i></a></li>
-												</ul>
-											</div>
-										</div>
-									</div>-->
-									<!-- 页码数位置end -->
-								                                
-                                
-                                </div>
+                                 </div>
                             </div>
                             <!-- END EXAMPLE TABLE PORTLET-->
                         </div>
@@ -339,7 +256,70 @@
          </div>
         <!-- END CONTAINER -->
         
-        
-
+ <#--弹出框-->
+  <div class="tab-pane active" id="tab_0" style="display:none;">
+      <div class="portlet box green">
+          <div class="portlet-title">
+              <div class="caption">
+                  <i class="fa fa-gift"></i>新增</div>
+              <!-- <div class="tools">
+                  
+                  <a href="javascript:;" class="remove"> </a>
+              </div> -->
+          </div>
+          <div class="portlet-body form">
+              <!-- BEGIN FORM-->
+              <form id="subForm" class="form-horizontal">
+                  <div class="form-body">
+                     <div class="form-group">
+                          <label class="control-label col-md-3">用户名
+                              <span class="required"> * </span>
+                          </label>
+                          <div class="col-md-4">
+                              <input type="text" class="form-control" name="username" />
+                              <span class="help-block"> Provide your username </span>
+                          </div>
+                      </div>
+                     <div class="form-group">
+                          <label class="control-label col-md-3">密码
+                              <span class="required"> * </span>
+                          </label>
+                          <div class="col-md-4">
+                              <input type="password" class="form-control" name="password" />
+                              <span class="help-block"> Provide your password </span>
+                          </div>
+                      </div>
+                     <div class="form-group">
+                          <label class="control-label col-md-3">重复密码
+                              <span class="required"> * </span>
+                          </label>
+                          <div class="col-md-4">
+                              <input type="text" class="form-control" name="password2" />
+                              <span class="help-block"> Again your password </span>
+                          </div>
+                      </div>
+                     <div class="form-group">
+                          <label class="control-label col-md-3">状态
+                          </label>
+                          <div class="col-md-4">
+                              <input type="radio" class="form-control" id="status" />
+                             
+                          </div>
+                      </div>
+                      
+                  </div>
+                  <div class="form-actions">
+                      <div class="row">
+                          <div class="col-md-offset-3 col-md-9">
+                              <button type="button" class="btn btn-circle green" onclick="doSave()">确定</button>
+                              <button type="button" class="btn btn-circle grey-salsa btn-outline" onclick="doClose()">Cancel</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+              <!-- END FORM-->
+          </div>
+      </div>
+ </div>
  <#include "common/footer.html">      
    
