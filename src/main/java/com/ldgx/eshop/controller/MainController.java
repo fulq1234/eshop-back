@@ -20,7 +20,7 @@ import com.ldgx.eshop.service.IAdminService;
  *
  */
 @Controller
-@RequestMapping("/main")
+@RequestMapping("/")
 public class MainController {
 	
 	@Autowired
@@ -30,7 +30,7 @@ public class MainController {
 	 * 访问路径  <项目名>/main/index
 	 * @return
 	 */
-	@RequestMapping("/index")
+	@RequestMapping("/")
 	public ModelAndView goindex() {
 		ModelAndView mv = new ModelAndView();
 		//页面

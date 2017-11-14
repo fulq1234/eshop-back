@@ -27,7 +27,7 @@
   	    pagination: true, //分页
   	    singleSelect: false,
   	   // data-locale:"zh-US", //表格汉化
-  	    //search: true, //显示搜索框
+  	   // search: true, //显示搜索框
   	    sidePagination: "server", //服务端处理分页
   	          columns: [
   	                  {
@@ -291,6 +291,12 @@
        		  }
    	  });
     }
+    
+    //查询方法
+    function doSearch(){
+    	var query_name = $("#query_name").val();
+    	$('#table-large-columns').bootstrapTable("refresh",{url:"${ctx}/admin/list?username="+query_name }); 
+    }
 </script>
 
 
@@ -328,11 +334,17 @@
                                 <div class="portlet-body">
                                     <div class="table-toolbar">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-7">
                                                 <div class="btn-group">
                                                     <button id="sample_editable_1_new" class="btn sbold green" onclick="openAdd()"> 新增
                                                         <i class="fa fa-plus"></i>
                                                     </button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control" id="query_name" style="display:inline;width:200px;padding-top:3px;" placeholder="请输入用户名"/>
+                                                <div class="btn-group">
+                                                    <button id="sample_editable_1_new" class="btn sbold green" onclick="doSearch()"> 查询 </button>
                                                 </div>
                                             </div>
                                            
@@ -412,7 +424,7 @@
                               <span class="required"> * </span>
                           </label>
                           <div class="col-md-4">
-                              <input type="text" class="form-control" name="username" class="{required:true,maxlength:32}"/>
+                              <input type="text" class="form-control" name="username"/>
                               <!-- <span class="help-block">请输入用户名</span> -->
                           </div>
                       </div>
@@ -421,7 +433,7 @@
                               <span class="required"> * </span>
                           </label>
                           <div class="col-md-4">
-                              <input type="password" class="form-control" name="password" class="{required:true}"/>
+                              <input type="password" class="form-control" name="password"/>
                               <!-- <span class="help-block">请输入密码</span> -->
                           </div>
                       </div>

@@ -34,4 +34,7 @@
 	
 	<!-- aop -->
 	<aop:aspectj-autoproxy/>
+	
+	<mvc:view-controller path="/" view-name="/main/index"/>
+	
  </beans>

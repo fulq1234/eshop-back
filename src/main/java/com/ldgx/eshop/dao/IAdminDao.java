@@ -25,6 +25,13 @@ public interface IAdminDao {
 			@Param(value="offset")int offset);
 	
 	/**
+	 * 根据用户名称查询全部记录
+	 * @param username
+	 * @return
+	 */
+	public int querycount(String username);
+	
+	/**
 	 * 新增
 	 * @param admin
 	 */

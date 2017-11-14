@@ -56,6 +56,15 @@ public class AdminServiceImpl implements IAdminService{
 		return null;
 	}
 
+	/*
+	 * 分页显示列表
+	 * @param username:查询条件：用户名
+	 * @param limit:一页显示几行
+	 * @param offset:偏移量
+	 * 
+	 * (non-Javadoc)
+	 * @see com.ldgx.eshop.service.IAdminService#list(java.lang.String, java.lang.Integer, java.lang.Integer)
+	 */
 	@Override
 	public PageBean<Admin> list(String username,Integer limit,Integer offset) {
 		if(limit == null){
@@ -64,14 +73,21 @@ public class AdminServiceImpl implements IAdminService{
 		if(offset == null){
 			offset = 0;
 		}
+		
 		List<Admin> list = adminDao.list(username,limit,offset);
 		
 		PageBean<Admin> page = new PageBean<Admin>();
-		page.setRows(list);
-		page.setTotal(91);
-		page.setPage(1);
-		page.setTotalPage(5);
-		page.setLimit(0);
+		page.setRows(list);//数据
+		
+		int count = adminDao.querycount(username);
+		page.setTotal(count);//总页数
+		
+		int ipage = offset/limit +1;
+		
+		if(ipage > count) {//如果页码大于1，就
+			ipage = 1;
+		}
+		page.setPage(ipage);//第几页;
 		return page;
 	}
 

@@ -22,6 +22,7 @@ public class AdminController{
 	
 	public ModelAndView space() {
 		ModelAndView mv = new ModelAndView();
+		mv.setViewName("main_index");
 		return mv;
 	}
 	

@@ -12,13 +12,24 @@
 	<select id="list" resultType="com.ldgx.eshop.entity.Admin">
 		select * from tbl_admin 
 		<where>
-			<if test="username != null">
-				username = #{username}
+			<if test="username != null and !username.equals(&quot;&quot;)">
+				username like #{username}
 			</if>
 		</where>
 		
 		limit ${limit} offset ${offset}
 	</select>
+	
+	<select id="querycount" resultType="int" parameterType="string">
+		select count(*) from tbl_admin
+		<where>
+			<if test="_parameter != null and !_parameter.equals(&quot;&quot;)"><!-- 如果参数是单个int或者string 类型，就必须用_parameter -->
+				username like #{_parameter}
+			</if>
+		</where>
+	</select>
+	
+	
 	<!-- 查找用户名是否重复 -->
 	<select id="findAdminByUserName" parameterType="string" resultType="int">
 		select count(*)
