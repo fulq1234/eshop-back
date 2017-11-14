@@ -54,8 +54,10 @@ public class MainController {
 		}else {//登录成功
 			
 			//保存到session中
-			this.saveAdminAtSession(admin);		
-			
+			HttpSession session = this.saveAdminAtSession();	
+
+	        session.setAttribute("currentAdmin", admin);
+	        
 			mv.setViewName("main_index");
 			return mv;
 		}
@@ -65,7 +67,7 @@ public class MainController {
 	 * 把admin保存到session中
 	 * @param admin
 	 */
-	private void saveAdminAtSession(Admin admin) {
+	private HttpSession saveAdminAtSession() {
 		RequestAttributes ra = RequestContextHolder.getRequestAttributes();
         ServletRequestAttributes sra = (ServletRequestAttributes) ra;
        //request
@@ -73,6 +75,34 @@ public class MainController {
         
         //session
         HttpSession session = request.getSession();
-        session.setAttribute("currentAdmin", admin);
+        return session;
+	}
+	
+	@RequestMapping("/logout")
+	public ModelAndView logout() {
+		ModelAndView mv = new ModelAndView();
+		
+		//清空session内容
+		HttpSession session = this.saveAdminAtSession();
+		session.removeAttribute("currentAdmin");
+		//页面
+		mv.setViewName("login");
+		return mv;
+	}
+	
+	/**
+	 * 跳转到错误页码
+	 * @return
+	 */
+	@RequestMapping("/error")
+	public ModelAndView error() {
+		ModelAndView mv = new ModelAndView();
+		
+		//清空session内容
+		HttpSession session = this.saveAdminAtSession();
+		session.removeAttribute("currentAdmin");
+		//页面
+		mv.setViewName("error");
+		return mv;
 	}
 }
