@@ -1,0 +1,49 @@
+<#--包含-->
+<#include "common/header.html">
+
+  <!-- BEGIN CONTENT -->
+<div class="page-content-wrapper">
+    <!-- BEGIN CONTENT BODY -->
+  <div class="page-content">
+
+	<form enctype="multipart/form-data" method="post" id="fform">
+		<input type="file" name="file" onchange="picchange(this)"/>
+	</form>
+
+</div>
+</div>
+                                
+ <script type="text/javascript">
+ 	function picchange(obj){
+ 		var fileVal = $(obj).val();
+ 		if(!fileVal){
+ 			return;
+ 		}
+ 		
+ 		$("#fform").ajaxSubmit({
+ 			url:"${ctx}/sale/upload-image",
+			type : "POST",
+			dataType : 'json',
+			cache:false,
+			success : function(result) {
+				if(result.result == 1){
+					var file  = document.querySelector('input[type=file]').files[0];
+					var fileUrl = getObjectURL(file);
+					if (fileUrl) {
+						$("#pic_show").attr('src',fileUrl);
+						$("#pic_show").show();
+					}
+					$("#storeLicence").val(result.data.fsimg);
+				}else{
+					layer.msg(result.message, {icon: $(this).attr('data-id'),time: 2000});
+				}
+			},
+			error : function(e) {
+				layer.msg("出现错误 ，请重试", {icon: $(this).attr('data-id'),time: 2000});
+			}
+ 		});
+ 	}
+ </script>                          
+                                    
+ <#include "common/footer.html">      
+   
