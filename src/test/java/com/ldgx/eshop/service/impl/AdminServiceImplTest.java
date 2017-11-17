@@ -10,6 +10,7 @@ import com.ldgx.eshop.dao.IAdminDao;
 import com.ldgx.eshop.entity.Admin;
 import com.ldgx.eshop.entity.RestBean;
 import com.ldgx.eshop.service.IAdminService;
+import com.ldgx.eshop.service.ITxService;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -21,6 +22,9 @@ public class AdminServiceImplTest {
 	
 	@Autowired
 	private IAdminService adminService;
+	
+	@Autowired
+	private ITxService txService;
 	
 	@Test
 	public void login() {
@@ -56,6 +60,11 @@ public class AdminServiceImplTest {
 		admin.setPassword("xx");
 		RestBean bean = adminService.save(admin);
 		System.out.println(bean.getContent());
+	}
+	
+	@Test
+	public void testtx() {
+		txService.tx1();
 	}
 	
 
