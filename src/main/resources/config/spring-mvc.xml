@@ -46,5 +46,13 @@
         <property name="maxUploadSize" value="5447680"/>
         <property name="maxInMemorySize" value="10240" />
     </bean>
+    
+    <!-- 拦截器 -->
+    <mvc:interceptors>
+    	<mvc:interceptor>
+    		<mvc:mapping path="/**"/>
+    		<bean class="com.ldgx.eshop.interceptor.LoginInterceptor"/>
+    	</mvc:interceptor>
+    </mvc:interceptors>
 	
  </beans>
