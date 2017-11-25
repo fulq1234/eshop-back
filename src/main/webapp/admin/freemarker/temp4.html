@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>freemarker 演示4</title>
+</head>
+<body>
+<h2>宏macro,nested,return指令</h2>
+<ul>
+	<li>例子1：无参数的macro</li>
+	<#macro test>
+		<font color="red">我是无参数的macro</font>
+	</#macro>
+	<@test/>
+	
+	<br/>
+	<li>例子2：有参数的macro</li>
+	
+	<#macro test2 param1 param2>
+		<font color="blue">我是有参数的macro${param1}.${param2}</font>
+	</#macro>
+	
+	<@test2 param1="java" param2="python"/>
+	
+	<li>例子3：有默认参数的macro</li>
+	<#macro test3 param1 param2="python">
+		<font color="red">我是有默认参数的macro${param1},${param2}</font>
+	</#macro>
+	
+	<@test3 param1 param2/>
+	
+	<h2>2.nested</h2>
+	
+	<#macro test param1="java">
+	${param1}<br/>
+	<#nested param1,"我的nested参数"><br/>
+	</#macro>
+	
+	<li>调用</li>
+	
+	<#--param1="java"是参数,分号后面的是嵌套的内容,两个参数以分号分割-->
+	<@test param1="java";loopVar1,loopVar2>
+		<font color="red">hello ${loopVar1},${loopVar2}</font>
+	</@test>
+	
+	<@test param1="python";loopVar1>
+		hello ${loopVar1}<br/>
+	</@test>
+	
+	<h2>3,函数</h2>
+	<#function doAdd param1 param2>
+		<#return param1 + param2>
+	</#function>
+	<li>调用</li>
+	你好，我是调用${doAdd(100,100)}
+</ul>
+
+</body>
+</html>

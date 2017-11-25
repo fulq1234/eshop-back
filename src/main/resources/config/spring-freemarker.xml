@@ -14,7 +14,8 @@
 	
 	<!-- 配置FreeMarker的模板路径 -->
 	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-		<property name="freemarkerSettings" ref="freemarkerConfigFile" />
+		<property name="freemarkerSettings" ref="freemarkerConfigFile" /> 		  
+        
 		<property name="templateLoaderPaths">
 			<list>
 				<value>/admin/</value>
@@ -22,6 +23,13 @@
 			</list>
 		</property>
 		
+		
+		<!-- 自定义指令 -->
+		<property name="freemarkerVariables">
+			<map>
+				<entry key="role" value-ref="roleDirectiveModel"/>
+			</map>
+		</property>
 	</bean>
 	
 	<!-- 配置freeMarker视图解析器 -->

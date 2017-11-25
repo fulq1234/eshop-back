@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>freemarker 演示1</title>
+</head>
+<body>
+
+<h2>substring,cap_first,ends_width,contains</h2>
+<#list "a|b|c|d"?split("|") as item>
+<li>${item}</li>
+</#list>
+<h2>date,datetime,time</h2>
+<#assign var1="01/03/2017"?date("MM/dd/yyyy")>
+<#assign var2="15:05:30"?time("HH:mm:ss")>
+<#assign var3 = "2016-12-31 03:05 PM"?datetime("yyyy-MM-dd hh:mm")>
+<li>${var1}</li>
+<li>${var2}</li>
+<li>${var3}</li>
+<h2>starts_with,index_of,last_index_of,split,trim</h2>
+
+<h2>string string?string("0.##"),round,floor,ceil</h2>
+<#assign numVar1 = 314.566222/>
+<li>${numVar1?string("0.##")}</li>
+<li>${numVar1?round}</li><#--四舍五入-->
+
+<h1>处理List的内建函数</h1>
+<h2>first,last,seq_contains,seq_index_of,size,reverse,sort,sort_by,chunk</h2>
+<#assign listVar1=[1,2,3,4,11,12,13,14,21,22,23,234]>
+<li>${listVar1?chunk(4)?size}</li>
+<h2>is_string,is_number,is_method,(),has_content,eval</h2>
+
+<#assign sVar = "hello">
+<li>${sVar?is_number?string("yes","no")}</li>
+<li>${"1" + "2"?eval}</li>
+</body>
+</html>

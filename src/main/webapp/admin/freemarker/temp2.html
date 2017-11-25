@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>freemarker 演示1</title>
+</head>
+<body>
+
+<h2>自定义函数TemplateMethodModelEx</h2>
+
+<#assign myList=[2,3,4,5,1,6,7,8]/>
+<li>未排序</li>
+<#list myList as item>
+${item},
+</#list>
+<li>官网排序</li>
+<#list myList?sort as item>
+${item_index}:${item}<br/>
+</#list>
+
+<li>已排序</li>
+<#list sort_int(myList) as item>
+${item},
+</#list>
+
+
+<h2>1,用户123456是否拥有admin角色，并且返回admin的权限</h2>
+<@role user='123456' role='admin';result1,result2>
+	<#if result1>
+		我的角色是admin
+	</#if>
+	
+	我拥有的权限是:
+	<#list result2 as item>
+		${item},
+	</#list>
+
+</@role>
+</body>
+</html>

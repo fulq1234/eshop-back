@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>freemarker 演示1</title>
+</head>
+<body>
+<h2>基本数据类型</h2>
+byte格式:${byteval!0}<br/>
+int格式:${intval!0}<br/>
+long格式:${longval!0}<br/>
+boolean格式:${booleanval!0}<br/>
+date格式:${dateval?string('yyyy-mm-dd HH:mm:ss')}<br/>
+date,mysql 格式:${dateval2}<br/>
+
+不存在的值:${nullval!'没有'}<br/>
+
+
+<br/>
+<#assign a1 = 2/>
+a=${a1}<br/>
+a +100=${a1 + 100}<br/>
+<br/>
+<h2>遍历List</h2><br/>
+<#list listval as temp>
+${temp},
+</#list>
+<br/>
+<br/>
+<h2>遍历map</h2><br/>
+<#list mapval?keys as temp>
+	${temp}:${mapval[temp]}<br/>
+</#list>
+<br/>
+
+<h2>if语法</h2>
+<#if ifval == 1>
+是1
+<#elseif ifval ==2>
+是2
+<#else>
+其它
+</#if>
+<h2>switch语法,switch,case,break,default</h2>
+<#switch ifval>
+	<#case 1>
+	是1啊
+	<#break>
+	<#case 2>
+	是2啊
+	<#break>
+	<#default>
+	其它
+</#switch>
+
+<h2>字符串操作</h2>
+<#assign a ="hello">
+<#assign b ="world">
+<li>连接</li>
+${a+b}
+<li>截取</li>
+${(a + b)?substring(0,2)}
+<li>长度</li>
+${(a + b)?length}
+<li>大写</li>
+${(a + b)?upper_case}
+<li>小写</li>
+${(a + b)?lower_case}
+<li>index_of</li>
+${(a + b)?index_of("w")}
+
+</body>
+</html>
