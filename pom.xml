@@ -176,7 +176,14 @@
 	    <artifactId>httpclient</artifactId>
 	    <version>4.5</version>
 	</dependency>
-		
+	
+	<!-- lucene,apache组织的一个以java实现的全文搜索引擎的开源项目 -->	
+	<dependency>
+	    <groupId>org.apache.lucene</groupId>
+	    <artifactId>lucene-core</artifactId>
+	    <version>7.1.0</version>
+	</dependency>
+	
   </dependencies>
   
   
