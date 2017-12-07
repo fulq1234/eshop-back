@@ -4,16 +4,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ldgx.eshop.dao.IAdminDao;
 import com.ldgx.eshop.entity.Admin;
-import com.ldgx.eshop.entity.RestBean;
 import com.ldgx.eshop.service.IAdminService;
 import com.ldgx.eshop.service.ITxService;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(Junit4ClassRunner.class)
 @ContextConfiguration(locations ="classpath:config/spring-*.xml")
 public class AdminServiceImplTest {
 	
@@ -28,11 +26,11 @@ public class AdminServiceImplTest {
 	
 	@Test
 	public void login() {
-		Admin admin = adminDao.query("admin");
+		Admin admin = adminDao.query("");
 		System.out.println(admin.getUsername());
 	}
 	
-	@Test
+	/*@Test
 	public void ullll() {
 		Admin admin = new Admin();
 		admin.setUsername("dkkdkdkd");
@@ -65,7 +63,7 @@ public class AdminServiceImplTest {
 	@Test
 	public void testtx() {
 		txService.tx1();
-	}
+	}*/
 	
 
 }

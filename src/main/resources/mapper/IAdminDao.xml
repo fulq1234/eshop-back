@@ -5,8 +5,11 @@
 	<select id="query" resultType="com.ldgx.eshop.entity.Admin">
 		select * from tbl_admin 
 		<where>
-				username = #{username}
+			<if test="_parameter != null and !_parameter.equals(&quot;&quot;)">
+				username = #{_parameter}
+			</if>
 		</where>
+		limit 1
 	</select>
 	
 	<select id="list" resultType="com.ldgx.eshop.entity.Admin">

@@ -1,15 +1,11 @@
 package com.ldgx.eshop.util;
 
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
@@ -26,44 +22,18 @@ import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ldgx.eshop.entity.Goods;
-
 /**
- * Lucene事件应用
+ * lucene是apache组织的基于java的全文检索开源项目
  * @author Administrator
  *
  */
-public class LuceneUtil {
-	
-	private static Logger logger = LoggerFactory.getLogger(LuceneUtil.class);
-	
-	private static String path = "D:/FuFu/lucene/index";
+public class LuceneTest1 {
 
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	/**
-	 * 判断是否存在数据
-	 * @return true:该文件夹下面有文件
-	 * false:该文件夹下面没有文件
+	 * 创建索引
 	 */
-	public static boolean ifExists() throws Exception{
-		logger.info("===info===");
-		File pfile = new File(path);
-		if(pfile.exists() && pfile.isDirectory() ) {
-			File[] files = pfile.listFiles();
-			if(files != null && files.length > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * 保存数据到lucene
-	 * @param list
-	 * @throws Exception
-	 */
-	public static void saveGoods(List<Goods> list) throws Exception{
-		logger.info("===saveGoods===");
-		
+	public void index() {
 		IndexWriter writer = null;
 		
 		try {
@@ -78,7 +48,7 @@ public class LuceneUtil {
 			 * 一次需要将RAMDirectory中的内容转到FSDirectory中
 			 */
 			
-			Directory directory = FSDirectory.open(Paths.get(path));
+			Directory directory = FSDirectory.open(Paths.get("D:/FuFu/lucene/index"));
 			
 			
 			/*
@@ -108,65 +78,41 @@ public class LuceneUtil {
         	 * 表中也可以有字段,往里面添加内容之后可以根据字段去匹配查询
              * 下面创建的doc对象中添加了三个字段，分别为name,sex,dosomething,
 			 */
-			//3.保存信息
-			for(Goods goods : list) {
-				//Document代表是一条数据，Field代表数据中的一个属性，一个Document中有多个Field
-				Document doc = new Document();
-				/*			 * 	
-				 * 用户String类型的字段的存储，StringField是只索引不分词
-				 * 对String类型的字段进行存储，TextField和StringField的不同是TextField既索引又分词
-				 * 
-				 * Store.YES 保存，可以查询，可以打印内容
-				 * Store.NO 不保存，可以查询，不可打印内容，由于不保存内容可以节省空间
-				 * Store.COMPRESS 压缩保存 可以查询 可以打印内容 可以节省生成索引文件的空间
-				 */			
-				doc.add(new TextField("id",goods.getId() + "",Store.YES));
-				
-				String goodsName = goods.getName();
-				if(goodsName == null) {
-					goodsName = "";
-				}
-				
-				doc.add(new StringField("name",goodsName,Store.YES));
-				
-				String goodsRemark = goods.getRemark();
-				if(goodsRemark == null) {
-					goodsRemark = "";
-				}
-				
-				doc.add(new TextField("remark",goodsRemark,Store.YES));
-				
-				writer.addDocument(doc);//添加文档
-			}
+			Document doc = new Document();
+			
+			/*
+			 *  public Field(String name, String value, IndexableFieldType type)
+			 *  @param name field name:字段名称
+		     *  @param value string value:字段的值
+		     *  @param type field type:  TextField.TYPE_STORED:存储字段值
+			 */
+			doc.add(new Field("id", "-1000", TextField.TYPE_STORED));
+			doc.add(new StringField("text", "4text", Field.Store.NO));
+			doc.add(new Field("name","4lin zhengle",TextField.TYPE_NOT_STORED));
+			doc.add(new Field("address","3中国上海",TextField.TYPE_STORED));
+			doc.add(new Field("dosometing","3I am learning lucene",TextField.TYPE_STORED));
+			
+			writer.addDocument(doc);
+			
 			
 			writer.close();//indexer创建完索引后如果没有关闭（提交）导致索引没有完整创建，就会导致搜索报错
 			directory.close();
 			
 		}catch(IOException e) {
+			logger.error("lucene,index",e);
 			e.printStackTrace();
 		}finally {
 			
 		}
-		
-		
-		
 	}
 	
 	/**
-	 * 根据name从lucene得到Goods数据
-	 * 对特定项搜索
-	 * 按词条搜索-TermQuery
-	 * @param name
-	 * @param limit:显示几条记录
-	 * @return
+	 * 这里演示根据已生成的索引，来查询
 	 */
-	public static List<Goods> queryByName(String name,int limit) throws Exception{
-		logger.info("===queryByName===");
-		List<Goods> list = new ArrayList<Goods>();
-		
+	public void searcher() {
 		try {
 			//1.创建Directory
-			Directory directory = FSDirectory.open(Paths.get(path));
+			Directory directory = FSDirectory.open(Paths.get("D:/FuFu/lucene/index"));
 			
 			//2.创建IndexSearcher检索索引的对象，里面要传递上面写入的内存目录对象directory
 			DirectoryReader ireader = DirectoryReader.open(directory);
@@ -179,11 +125,11 @@ public class LuceneUtil {
 			 *  @param searchKey:代表查询关键字
 			 *  Term这个类是搜索的最低单位，它是在索引过程中类似Field。建立搜索单元
 			*/
-			Query query = new TermQuery(new Term("name",name));
+			Query query = new TermQuery(new Term("dosometing","lucene"));
 			
 			//4.根据searcher搜索并返回TopDocs
 			//表示返回前10行
-			TopDocs topDocs = searcher.search(query, limit);
+			TopDocs topDocs = searcher.search(query, 10);
 			
 			//5.根据TopDocs获取ScoreDoc对象
 			ScoreDoc[] scoreDocs = topDocs.scoreDocs;
@@ -192,41 +138,86 @@ public class LuceneUtil {
 				
 				//6.根据Searcher和ScordDoc对象获取具体的Document对象
 				//获取这个温度的id
-				/*int doc = sd.doc;
+				int doc = sd.doc;
 				Document document = searcher.doc(doc);
 				
 				//7.根据Document对象获取需要的值
 				System.out.println("【" +doc + "找到】" +document.get("id") + "    " + document.get("name") + "    " + document.get("address") + " .." + document.get("dosometing"));
-				*/
-				int doc = sd.doc;
-				Document document = searcher.doc(doc);
-				Goods goods = new Goods();
-				if(document.get("id") != null) {
-					String dbids = document.get("id");
-					int dbid = Integer.parseInt(dbids);
-					goods.setId(dbid);
-					
-				}
-				if(document.get("name") != null) {
-					String dbname = document.get("name");
-					goods.setName(dbname);
-					
-				}
-				
-				list.add(goods);
 				
 				
 			}
 			
 			ireader.close();
 			directory.close();
-			return list;
 		}catch(IOException e) {
 			e.printStackTrace();
-			return list;
 		}
-		
-		
 	}
 	
+	/**
+	 * 删除索引
+	 */
+	public void delete() {
+		try {
+			IndexWriter writer = null;
+			//1.创建Directory
+			//Directory directory = new RAMDirectory();//这个方法是建立在内存中的索引
+			Directory directory = FSDirectory.open(Paths.get("D:/FuFu/lucene/index"));
+			
+			//2.创建IndexWriter,用完后要关闭
+			IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
+			writer = new IndexWriter(directory,config);
+			//删除全部索引
+			//writer.deleteAll();
+			
+			//参数可以为一个查询的Query,也可以为一个Term,它是一个精确的值，代表着把id为1的给删除掉
+			//注意，这里的删除，并不是真的删除。执行完之后，可以在索引的目录里面看到多了一个.del的文件，那是一个类似回收站的文件，在回收站中的文件是可以进行还原的
+			writer.deleteDocuments(new Term("id","-1000"));
+			
+			writer.close();
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	 /**
+     * 删除索引并不是完全删除，它是有着一个回收站的功能
+     * 上面的delete删除了一个索引，这里进行恢复
+     */
+    public void recovery(){
+      /*  try {
+        	//这一步很重要，因为默认打开的reader是只读的，所以这里要通过构造方法，把它的readonly设置为false，否则会抛出异常
+            IndexReader reader = IndexReader.open(directory,false);
+            //还原所有已删除的数据
+            reader.undeleteAll();
+
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+    }
+    
+    public int isexist() {
+    	try {
+    		IndexWriter writer = null;
+    		//1.创建Directory
+    		//Directory directory = new RAMDirectory();//这个方法是建立在内存中的索引
+    		Directory directory = FSDirectory.open(Paths.get("D:/FuFu/lucene/index"));
+			
+			//2.创建IndexWriter,用完后要关闭
+			IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
+			writer = new IndexWriter(directory,config);
+			int s = writer.numDocs();
+			
+    		directory.close();
+    		return s;
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    	return 0;
+    }
+	public static void main(String[] args) {
+		LuceneTest1 util = new LuceneTest1();
+		util.index();
+	}
 }
